@@ -71,7 +71,7 @@
             <p>{{ item.txid }}</p>
           </div>
           <div class="message-body">
-            Value in: {{ item.valueIn }}
+            Value: {{ item.vout[0].value }}
           </div>
         </article>
 
