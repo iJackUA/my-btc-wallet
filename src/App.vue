@@ -9,15 +9,12 @@
 
         <div class="field has-addons">
           <p class="control">
-            <input v-model="address" class="input" type="text" placeholder="Your address">
+            <input v-model="addressWIF" class="input" type="text" placeholder="Your address WIF (Private key)">
           </p>
           <p class="control">
             <a class="button is-static">
-              {{ balance }} BTC
+              {{ balance }} mBTC
             </a>
-          </p>
-          <p class="control">
-            <input v-model="privateKey" class="input" type="text" placeholder="Your private key">
           </p>
         </div>
 
@@ -49,16 +46,32 @@
           </p>
         </div>
 
+        <div class="field has-addons">
+          <div class="control">
+            <a class="button is-info" @click="generateNewAddress">
+              Generate new address
+            </a>
+          </div>
+          <div class="control">
+            <input v-model="newAddress" class="input" type="text" placeholder="New address will appear here">
+          </div>
+        </div>
+
       </div>
       <div class="column">
-        Transactions:
+        Transactions (Total: {{ transactions.totalNum }}): 
+        <p class="field">
+          <a class="button" @click="refreshTransactions">
+            Refresh
+          </a>
+        </p>
 
-        <article v-for="(value, key, index) in transactions" class="message is-primary">
+        <article v-for="(item, key, index) in transactions.items" class="message is-primary">
           <div class="message-header">
-            <p>Header</p>
+            <p>{{ item.txid }}</p>
           </div>
           <div class="message-body">
-            Description
+            Value in: {{ item.valueIn }}
           </div>
         </article>
 
@@ -69,29 +82,74 @@
 </template>
 
 <script>
+import axios from 'axios'
+import bitcoin from 'bitcoinjs-lib'
+
+window.bitcoin = bitcoin
+
 export default {
   name: 'app',
   data () {
     return {
+      addressWIF: '',
       address: '',
       privateKey: '',
       balance: 0,
       addressTo: '',
       amountTo: '',
-      transactions: []
+      transactions: {
+        totalNum: null,
+        items: []
+      },
+      newAddress: ''
     }
   },
   watch: {
-    address (val, oldVal) {
-      this.balance = 0
+    addressWIF (val, oldVal) {
+      let keyPair = bitcoin.ECPair.fromWIF(val, bitcoin.networks.testnet)
+      this.address = keyPair.getAddress()
+      axios.get(`http://localhost:3001/insight-api/addr/${this.address}/balance`)
+      .then((response) => {
+        this.balance = response.data
+      })
+      .catch((error) => {
+        console.log(error)
+      })
     }
   },
   methods: {
     send () {
-      alert(`Send ${this.amountTo}`)
+      alert(`HI`)
+    },
+    generateNewAddress () {
+      let keyPair = bitcoin.ECPair.makeRandom({ network: bitcoin.networks.testnet })
+      let addr = keyPair.getAddress()
+      let wifPair = keyPair.toWIF()
+      console.log(wifPair)
+      this.newAddress = addr
+    },
+    refreshTransactions () {
+      let params = {
+        addrs: this.address,
+        from: 0,
+        to: 20
+      }
+      axios.post(`http://localhost:3001/insight-api/addrs/txs`, params)
+      .then((response) => {
+        this.transactions.items = response.data.items
+        this.transactions.totalNum = response.data.totalNum
+      })
+      .catch((error) => {
+        console.log(error)
+      })
     }
   }
 }
+
+// // Put the object into storage
+// localStorage.setItem('testObject', JSON.stringify(testObject));
+// // Retrieve the object from storage
+// var retrievedObject = localStorage.getItem('testObject');
 </script>
 
 <style lang="scss">
