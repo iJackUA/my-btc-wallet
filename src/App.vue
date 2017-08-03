@@ -13,7 +13,7 @@
           </p>
           <p class="control">
             <a class="button is-static">
-              {{ balance }} mBTC
+              {{ balance }} BTC
             </a>
           </p>
         </div>
@@ -66,7 +66,7 @@
           </a>
         </p>
 
-        <article v-for="(item, key, index) in transactions.items" class="message is-primary">
+        <article v-for="(item, key, index) in transactions.items" class="message is-primary transaction">
           <div class="message-header">
             <p>{{ item.txid }}</p>
           </div>
@@ -108,9 +108,9 @@ export default {
     addressWIF (val, oldVal) {
       let keyPair = bitcoin.ECPair.fromWIF(val, bitcoin.networks.testnet)
       this.address = keyPair.getAddress()
-      axios.get(`http://localhost:3001/insight-api/addr/${this.address}/balance`)
+      axios.get(`https://test-insight.bitpay.com/api/addr/${this.address}/balance`)
       .then((response) => {
-        this.balance = response.data
+        this.balance = response.data / 100000000
       })
       .catch((error) => {
         console.log(error)
@@ -134,7 +134,7 @@ export default {
         from: 0,
         to: 20
       }
-      axios.post(`http://localhost:3001/insight-api/addrs/txs`, params)
+      axios.post(`https://test-insight.bitpay.com/api/addrs/txs`, params)
       .then((response) => {
         this.transactions.items = response.data.items
         this.transactions.totalNum = response.data.totalNum
@@ -164,5 +164,9 @@ export default {
 
 .columns{
   text-align: left;
+}
+
+.transaction{
+  word-break: break-all;
 }
 </style>
