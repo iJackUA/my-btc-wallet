@@ -71,7 +71,7 @@
             <p>{{ item.txid }}</p>
           </div>
           <div class="message-body">
-            Value: {{ item.vout[0].value }}
+            <tree-view :data="item" :options="{maxDepth: 0}"></tree-view>
           </div>
         </article>
 
@@ -86,6 +86,7 @@ import axios from 'axios'
 import bitcoin from 'bitcoinjs-lib'
 
 window.bitcoin = bitcoin
+var apiUrl = 'https://test-insight.bitpay.com/api'
 
 export default {
   name: 'app',
@@ -108,7 +109,7 @@ export default {
     addressWIF (val, oldVal) {
       let keyPair = bitcoin.ECPair.fromWIF(val, bitcoin.networks.testnet)
       this.address = keyPair.getAddress()
-      axios.get(`https://test-insight.bitpay.com/api/addr/${this.address}/balance`)
+      axios.get(`${apiUrl}/addr/${this.address}/balance`)
       .then((response) => {
         this.balance = response.data / 100000000
       })
@@ -123,10 +124,9 @@ export default {
     },
     generateNewAddress () {
       let keyPair = bitcoin.ECPair.makeRandom({ network: bitcoin.networks.testnet })
-      let addr = keyPair.getAddress()
+     // let addr = keyPair.getAddress()
       let wifPair = keyPair.toWIF()
-      console.log(wifPair)
-      this.newAddress = addr
+      this.newAddress = wifPair
     },
     refreshTransactions () {
       let params = {
@@ -134,7 +134,7 @@ export default {
         from: 0,
         to: 20
       }
-      axios.post(`https://test-insight.bitpay.com/api/addrs/txs`, params)
+      axios.post(`${apiUrl}/addrs/txs`, params)
       .then((response) => {
         this.transactions.items = response.data.items
         this.transactions.totalNum = response.data.totalNum

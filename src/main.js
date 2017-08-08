@@ -4,7 +4,9 @@ require('./scss/app.scss')
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import TreeView from 'vue-json-tree-view'
 
+Vue.use(TreeView)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
