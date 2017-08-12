@@ -1,6 +1,20 @@
-# mybtcwallet
+# My BTC Wallet
 
-> A Vue.js project
+> Just for fun
+
+## TODO
+
+* Transaction prio selection Low (within 6 blocks) / High (within 2 blocks)
+* Calculate optimal fee at the moment
+* Replace by Fee ?
+* Reject transactions with minrelaytxfee * 3 (and charge lower then same amount)
+* Do not create outputs that are smaller than fee (check is it "dust")
+* List transactons filter: Incoming, Outgoing, In Mempool
+* HD wallet, check 20 addresses, and 1 account
+* BIP39 external lib to support seed from mnemonic decode
+
+
+
 
 ## Build Setup
 
