@@ -1,5 +1,7 @@
 # My BTC Wallet
 
+![alt text](https://user-images.githubusercontent.com/568566/30913634-982d3656-a399-11e7-98df-1ef8b3dbb925.jpg)
+
 > Just for fun
 
 ## TODO
